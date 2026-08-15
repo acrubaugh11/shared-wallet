@@ -7,18 +7,14 @@ export default function TabLayout() {
   return (
     <Tabs
     screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: '#ffd33d',
-        headerStyle: {
-            backgroundColor: '#25292e',
-        },
-        headerShadowVisible: false,
-        headerTintColor: '#fff',
         tabBarStyle: {
-            backgroundColor: '#070707',
+            backgroundColor: '#11020a',
               borderTopWidth: 0,
               elevation: 0,
               shadowOpacity: 0,
-        }
+        },
     }}
     >
       <Tabs.Screen name="index"
@@ -27,7 +23,6 @@ export default function TabLayout() {
          tabBarIcon: ({color, focused}) => (
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24}/>
         ),
-
          }} />
       <Tabs.Screen name="groups" 
       options={{
