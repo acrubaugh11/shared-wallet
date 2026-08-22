@@ -1,13 +1,18 @@
+import { Colors } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PlaceholderImage = require('@/assets/images/logo.png');
+const BackgroundImage = require('@/assets/images/bg.jpg');
 
 export default function Index() {
+  const { profile } = useAuth();
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
   const pickImageAsync = async () => {
@@ -25,21 +30,26 @@ export default function Index() {
   };
 
   return (
-    <View style={[styles.container, {paddingTop: useSafeAreaInsets().top + 10}]}>
-    {/* Header/top part for home page */}\
+    <ImageBackground
+      source={BackgroundImage}
+      resizeMode="cover"
+      style={[styles.container, {paddingTop: useSafeAreaInsets().top + 10}]}
+    >
+    <View style={styles.overlay} />
+    {/* Header/top part for home page */}
     <View style = {styles.header}>
       <View style={styles.headerContainer}>
         <View style={styles.nameLogo}>
-          <Text style={styles.text}>Hello, Alex</Text>
-          <Ionicons name="hand-right-sharp" size={24} color="#ffd33d" onPress={() => {}} />
+          <Text style={styles.text}>Hello, {profile?.display_name ?? 'there'}</Text>
+          <Ionicons name="hand-right-sharp" size={24} color={Colors.accent} onPress={() => {}} />
         </View>
-        <Ionicons name="notifications-sharp" size={30} color="#ffd33d" onPress={() => {}} />
+        <Ionicons name="notifications-sharp" size={30} color={Colors.accent} onPress={() => {}} />
       </View>
       <Text style={styles.subText}>Track, share, spend together!</Text>
     </View>
 
     {/*Total spent this month container */}
-    <View style={styles.totalSpentContainer}>
+    {/* <View style={styles.totalSpentContainer}>
       <View style={styles.totalSpentText}>
         <Text style={styles.subText}>This Month</Text>
         <Text style={styles.subText}>Toal Spent:</Text>
@@ -51,28 +61,28 @@ export default function Index() {
           style={styles.pieImage}
         />
       </View>
-    </View>
+    </View> */}
 
     <View style={styles.boxes}>
-      <View style={styles.box}>
-        <Ionicons name="wallet-outline" size={24} color="#ffd33d" onPress={() => {}} />
+      <Pressable style={styles.box} onPress={() => router.push('/expenses')}>
+        <Ionicons name="wallet-outline" size={24} color={Colors.accent} />
         <Text   minimumFontScale={0.6} numberOfLines={1} adjustsFontSizeToFit style={styles.boxText}>Expenses</Text>
-      </View>
-      <View style={styles.box}>
-        <Ionicons name="people-outline" size={24} color="#ffd33d" onPress={() => {}} />
+      </Pressable>
+      <Pressable style={styles.box} onPress={() => router.push('/groups')}>
+        <Ionicons name="people-outline" size={24} color={Colors.accent} />
         <Text minimumFontScale={0.6}  numberOfLines={1} adjustsFontSizeToFit  style={styles.boxText}>Groups</Text>
 
-      </View>
-      <View style={styles.box}>
-        <Ionicons name="notifications-outline" size={24} color="#ffd33d" onPress={() => {}} />
+      </Pressable>
+      <Pressable style={styles.box} onPress={() => router.push('/activity')}>
+        <Ionicons name="notifications-outline" size={24} color={Colors.accent} />
         <Text minimumFontScale={0.6}  numberOfLines={1} adjustsFontSizeToFit  style={styles.boxText}>Activity</Text>
 
-      </View>
-      <View style={styles.box}>
-        <Ionicons name="person-outline" size={24} color="#ffd33d" onPress={() => {}} />
+      </Pressable>
+      <Pressable style={styles.box} onPress={() => router.push('/profile')}>
+        <Ionicons name="person-outline" size={24} color={Colors.accent} />
         <Text minimumFontScale={0.6}  numberOfLines={1} adjustsFontSizeToFit  style={styles.boxText}>Profile</Text>
 
-      </View>
+      </Pressable>
     </View>
 
 
@@ -81,16 +91,20 @@ export default function Index() {
 
 
 
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a121b',
+    backgroundColor: Colors.background,
     gap: 20,
     paddingHorizontal: 20,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(23, 10, 10, 0.6)',
   },
   header: {
     // backgroundColor: 'green',
@@ -124,26 +138,26 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 28,
-    color: '#fff',
+    color: Colors.text,
     fontWeight: 'bold',
     fontFamily: 'system-ui',
   },
   subText: {
     fontSize: 16,
-    color: 'white',
+    color: Colors.text,
     fontWeight: 'light',
     fontFamily: 'system-ui',
     width: '100%',
   },
   boxText: {
     fontSize: 14,
-    color: 'white',
+    color: Colors.text,
     fontWeight: 'light',
     fontFamily: 'system-ui',
     width: '100%',
   },
   totalSpentContainer: {
-    backgroundColor: '#2b0909',
+    backgroundColor: Colors.surface,
     borderRadius: 25,
     width: '100%',
     alignItems: 'center',
@@ -160,16 +174,18 @@ const styles = StyleSheet.create({
   },
   boxes:{
     flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: 10
   },
   box: {
-    backgroundColor: '#2e0202',
+    backgroundColor: Colors.surfaceAlt,
     borderRadius: 10,
     alignItems: 'center',
     flexDirection: 'column',
     padding: 12,
     gap: 10,
-    flex: 1
+    flex: 1,
+    minWidth: 0,
+    borderWidth: 2,
+    borderColor: '#191210'
   }
 });

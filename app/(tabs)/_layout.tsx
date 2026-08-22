@@ -1,16 +1,15 @@
+import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-
-
 
 export default function TabLayout() {
   return (
     <Tabs
     screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#ffd33d',
+        tabBarActiveTintColor: Colors.accent,
         tabBarStyle: {
-            backgroundColor: '#11020a',
+            backgroundColor: Colors.tabBar,
               borderTopWidth: 0,
               elevation: 0,
               shadowOpacity: 0,
@@ -22,6 +21,13 @@ export default function TabLayout() {
          title: 'Home',
          tabBarIcon: ({color, focused}) => (
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24}/>
+        ),
+         }} />
+      <Tabs.Screen name="expenses"
+       options={{
+         title: 'Expenses',
+         tabBarIcon: ({color, focused}) => (
+            <Ionicons name={focused ? 'wallet-sharp' : 'wallet-outline'} color={color} size={24}/>
         ),
          }} />
       <Tabs.Screen name="groups" 
@@ -38,12 +44,12 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'notifications-circle' : 'notifications-circle-outline'} color={color} size={24}/>
          ), 
         }} />
-              <Tabs.Screen name="profile" 
+              <Tabs.Screen name="profile"
       options={{
          title: 'Profile' ,
          tabBarIcon: ({color, focused}) => (
             <Ionicons name={focused ? 'person-circle' : 'person-circle-outline'} color={color} size={24}/>
-         ), 
+         ),
         }} />
     </Tabs>
   );
