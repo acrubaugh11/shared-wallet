@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function LoginScreen() {
-  const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
+  const { signIn, signUp, requestPasswordReset } = useAuth();
+  const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgot'>('signIn');
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,13 +14,22 @@ export default function LoginScreen() {
   const [submitting, setSubmitting] = useState(false);
 
   const isSignUp = mode === 'signUp';
+  const isForgot = mode === 'forgot';
 
   const handleSubmit = async () => {
     setError(null);
     setInfo(null);
     setSubmitting(true);
     try {
-      if (isSignUp) {
+      if (isForgot) {
+        if (!email.trim()) {
+          setError('Enter your email address.');
+          return;
+        }
+        await requestPasswordReset(email.trim());
+        setInfo('If an account exists for that email, a reset link is on its way.');
+        setMode('signIn');
+      } else if (isSignUp) {
         if (!displayName.trim()) {
           setError('Please enter a display name.');
           setSubmitting(false);
@@ -53,7 +62,11 @@ export default function LoginScreen() {
       >
         <Text style={styles.title}>Shared Wallet</Text>
         <Text style={styles.subtitle}>
-          {isSignUp ? 'Create an account to get started' : 'Sign in to continue'}
+          {isForgot
+            ? 'Enter your email and we’ll send you a reset link'
+            : isSignUp
+              ? 'Create an account to get started'
+              : 'Sign in to continue'}
         </Text>
 
         <View style={styles.form}>
@@ -78,16 +91,31 @@ export default function LoginScreen() {
             value={email}
             onChangeText={setEmail}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={Colors.textSubtle}
-            secureTextEntry
-            autoCapitalize="none"
-            autoComplete={isSignUp ? 'new-password' : 'password'}
-            value={password}
-            onChangeText={setPassword}
-          />
+          {!isForgot && (
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor={Colors.textSubtle}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete={isSignUp ? 'new-password' : 'password'}
+              value={password}
+              onChangeText={setPassword}
+            />
+          )}
+
+          {!isSignUp && !isForgot && (
+            <Pressable
+              style={styles.forgotLink}
+              onPress={() => {
+                setError(null);
+                setInfo(null);
+                setMode('forgot');
+              }}
+            >
+              <Text style={styles.toggleButtonText}>Forgot password?</Text>
+            </Pressable>
+          )}
 
           {error && <Text style={styles.errorText}>{error}</Text>}
           {info && <Text style={styles.infoText}>{info}</Text>}
@@ -98,7 +126,13 @@ export default function LoginScreen() {
             disabled={submitting}
           >
             <Text style={styles.submitButtonText}>
-              {submitting ? 'Please wait...' : isSignUp ? 'Sign Up' : 'Sign In'}
+              {submitting
+                ? 'Please wait...'
+                : isForgot
+                  ? 'Send Reset Link'
+                  : isSignUp
+                    ? 'Sign Up'
+                    : 'Sign In'}
             </Text>
           </Pressable>
 
@@ -106,11 +140,16 @@ export default function LoginScreen() {
             style={styles.toggleButton}
             onPress={() => {
               setError(null);
-              setMode(isSignUp ? 'signIn' : 'signUp');
+              setInfo(null);
+              setMode(isForgot || isSignUp ? 'signIn' : 'signUp');
             }}
           >
             <Text style={styles.toggleButtonText}>
-              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+              {isForgot
+                ? 'Back to Sign In'
+                : isSignUp
+                  ? 'Already have an account? Sign In'
+                  : "Don't have an account? Sign Up"}
             </Text>
           </Pressable>
         </View>
@@ -190,6 +229,9 @@ const styles = StyleSheet.create({
   toggleButton: {
     alignItems: 'center',
     marginTop: 8,
+  },
+  forgotLink: {
+    alignSelf: 'flex-end',
   },
   toggleButtonText: {
     color: Colors.accent,

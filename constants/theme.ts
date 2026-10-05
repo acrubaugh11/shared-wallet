@@ -2,7 +2,7 @@ export const Colors = {
   background: '#191210',
   surface: '#594136',
   surfaceAlt: '#594136',
-  tabBar: '#0C0908',
+  tabBar: '#261C17',
   accent: '#C9BF69',
   text: '#FEFFEA',
   textMuted: '#cfcfcf',
